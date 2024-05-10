@@ -1,78 +1,71 @@
+import csv
+import random
 
-import json
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
+
+from rando_generator import (
+    get_random_age, 
+    get_random_country, 
+    get_random_gender,
+)
 app = Flask(__name__)
 
-employees = [
- {'id': 1, 'name': 'Ashley'},
- {'id': 2, 'name': 'Kate'},
- {'id': 3, 'name': 'Joe'}
-]
+file_name = './data/training.1600000.processed.noemoticon.csv'
+
+age_weights = {
+    (9, 18): 0.2,
+    (19, 35): 0.4,
+    (36, 50): 0.3,
+    (51, 100): 0.1,
+}
+
+country_weights = {
+    'USA': 0.3,
+    'UK': 0.25,
+    'Canada': 0.25,
+    'Australia': 0.2
+}
+
+gender_weights = {
+    'Male': 0.45,
+    'Female': 0.45,
+    'Other': 0.1,
+}
 
 
-nextEmployeeId = 4
-3
+csv_offset = 0
+dataset_size = 1_600_000
+
+def read_tweets(file_path, offset, limit):
+    tweets = []
+    with open(file_path, 'r', encoding='latin-1') as csvfile:
+        reader = csv.reader(csvfile)
+        for i, row in enumerate(reader):
+            if i >= offset and len(tweets) < limit:
+                target, ids, date, flag, user, text = row
+                tweet = {
+                    "target": int(target),
+                    "ids": int(ids),
+                    "date": date,
+                    "flag": flag,
+                    "user": user,
+                    "text": text,
+                    "gender": get_random_gender(gender_weights),
+                    "age":get_random_age(age_weights),
+                    "country":get_random_country(country_weights),
+                }
+                tweets.append(tweet)
+    return tweets
 
 
-@app.route('/employees', methods=['GET'])
-def get_employees():
- return jsonify(employees)
+@app.route('/tweets/latest', methods=['GET'])
+def latest_tweets():
+    global csv_offset, file_name
+    limit = random.randint(0, 10)
+    tweets = read_tweets(file_name, csv_offset, limit)
+    csv_offset = (csv_offset + limit) % dataset_size
+    return jsonify({"tweets": tweets})
 
-
-@app.route('/employees/<int:id>', methods=['GET'])
-def get_employee_by_id(id: int):
- employee = get_employee(id)
- if employee is None:
-   return jsonify({'error': 'Employee does not exist'}), 404
- return jsonify(employee)
-
-
-def get_employee(id):
- return next((e for e in employees if e['id'] == id), None)
-
-
-def employee_is_valid(employee):
-    for key in employee.keys():
-    if key != 'name':
-        return False
- return True
-
-@app.route('/employees', methods=['POST'])
-def create_employee():
- global nextEmployeeId
- employee = json.loads(request.data)
- if not employee_is_valid(employee):
-   return jsonify({ 'error': 'Invalid employee properties.' }), 400
-
- employee['id'] = nextEmployeeId
- nextEmployeeId += 1
- employees.append(employee)
-
- return '', 201, { 'location': f'/employees/{employee["id"]}' }
-
-@app.route('/employees/<int:id>', methods=['PUT'])
-def update_employee(id: int):
- employee = get_employee(id)
- if employee is None:
-   return jsonify({ 'error': 'Employee does not exist.' }), 404
-
- updated_employee = json.loads(request.data)
- if not employee_is_valid(updated_employee):
-   return jsonify({ 'error': 'Invalid employee properties.' }), 400
-
- employee.update(updated_employee)
-
- return jsonify(employee)
-
-@app.route('/employees/<int:id>', methods=['DELETE'])
-def delete_employee(id: int):
- global employees
- employee = get_employee(id)
- if employee is None:
-   return jsonify({ 'error': 'Employee does not exist.' }), 404
-
- employees = [e for e in employees if e['id'] != id]
- return jsonify(employee), 200
 
 if __name__ == '__main__':
-   app.run(port=5000)
+    app.run(port=5000, debug=True)
