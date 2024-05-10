@@ -3,7 +3,14 @@ import pandas as pd
 import json
 import datetime
 
+
+## Output bucket in S3
+s3_bucket = "s3://gold-upc-ccbda-project-data-sentiment-analysis-data/gold_data/"
+
+## declare model from transformers
 clf = pipeline("text-classification",model='bhadresh-savani/distilbert-base-uncased-emotion', return_all_scores=True)
+
+## Output bucket in S3
 s3_bucket = "s3://gold-upc-ccbda-project-data-sentiment-analysis-data/gold_data/"
 
 
