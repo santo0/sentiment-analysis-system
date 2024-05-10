@@ -2,3 +2,4 @@ transformers
 pandas
 jupyter
 tensorflow
+tf-keras
