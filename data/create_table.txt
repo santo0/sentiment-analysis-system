@@ -1,0 +1,21 @@
+CREATE EXTERNAL TABLE IF NOT EXISTS `TweetsDB`.`Tweets` (
+  `age` bigint,
+  `country` varchar(50),
+  `date` varchar(50),
+  `flag` varchar(50),
+  `gender` varchar(50),
+  `ids` bigint,
+  `target` bigint,
+  `text` varchar(280),
+  `user` varchar(50),
+  `sadness` double,
+  `joy` double,
+  `love` double,
+  `anger` double,
+  `fear` double,
+  `surprise` double
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
+STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+LOCATION 's3://ccbda7-project-practice/'
+TBLPROPERTIES ('classification' = 'parquet');
