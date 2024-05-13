@@ -1,0 +1,23 @@
+Analytics/Visualization pipeline:
+
+S3.1 - all data with sentiment features.
+??? Glue for duplicate and redundant column removal 
+Athena Views for specified brand/item
+QuickSight queries through Athena
+
+
+Steps for Analytics/Visualization 
+S3:
+Create a bucket to hold all the data with sentiment features as a list of parquet files
+Create a bucket to hold Athena query results stored as csv + metadata. 
+Athena:
+Set the primary (or other) workgroup output to proper S3 bucket
+Create the main data table (and database if necessary) through SQL
+Create specified views
+QuickSight:
+Load datasets from views
+Create dashboards
+
+Notes:
+Lifecycle rules can limit how long the data query exists until it is deleted.
+Anytime QuickSight filters data, that is considered a query. Those queries can probably be systematically stored and kept for additional analysis for trends over time. We can potentially  store them and mention this idea in the final report/presentation.
