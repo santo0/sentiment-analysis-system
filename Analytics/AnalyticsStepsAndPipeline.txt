@@ -2,7 +2,7 @@ Analytics/Visualization pipeline:
 
 S3 per customer - contains processed data in folders per product/feature
 ??? Glue for duplicate and redundant column removal 
-Athena Views for specified brand/item
+Athena Views for loading hdfs files into quicksight
 QuickSight queries through Athena
 
 
