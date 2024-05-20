@@ -1,6 +1,6 @@
 Analytics/Visualization pipeline:
 
-S3.1 - all data with sentiment features.
+S3 per customer - contains processed data in folders per product/feature
 ??? Glue for duplicate and redundant column removal 
 Athena Views for specified brand/item
 QuickSight queries through Athena
@@ -8,14 +8,13 @@ QuickSight queries through Athena
 
 Steps for Analytics/Visualization 
 S3:
-Create a bucket to hold all the data with sentiment features as a list of parquet files
-Create a bucket to hold Athena query results stored as csv + metadata. 
+Have list of buckets for processed customer tweets
+Create a single bucket to hold Athena query results stored as csv + metadata. 
 Athena:
-Set the primary (or other) workgroup output to proper S3 bucket
+Set the primary (or other) workgroup output to proper S3 bucket (the one we created)
 Create the main data table (and database if necessary) through SQL
-Create specified views
 QuickSight:
-Load datasets from views
+Create dataset from the corresponding table (select to use SPICE)
 Create dashboards
 
 Notes:

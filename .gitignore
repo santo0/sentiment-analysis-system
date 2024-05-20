@@ -162,3 +162,7 @@ cython_debug/
 archive.zip
 training.1600000.processed.noemoticon.csv
 test.csv
+
+# Pycharm
+.DS_Store
+**/.DS_Store
