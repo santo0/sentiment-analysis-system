@@ -40,7 +40,9 @@ def process_and_store_items():
         # Store batch in S3
         # skip customer name
         batch_path = os.path.join(
-            '/'.join(table_name.split('.')[1:]), f'batch_{batch_date}.json'
+            '/'.join(table_name.split('.')[1:]),
+            'raw',
+            f'batch_{batch_date}.json',
         )
         print(batch_path)
         s3.put_object(
