@@ -1,7 +1,7 @@
-CREATE EXTERNAL TABLE IF NOT EXISTS `tweetsdb`.`cust_test_table` (
+CREATE EXTERNAL TABLE IF NOT EXISTS `tweetsdb`.`cust_test_table_glue` (
   `age` bigint,
   `country` varchar(50),
-  `date` varchar(50),
+  `date` timestamp,
   `flag` varchar(50),
   `gender` varchar(50),
   `ids` bigint,
@@ -14,8 +14,12 @@ CREATE EXTERNAL TABLE IF NOT EXISTS `tweetsdb`.`cust_test_table` (
   `anger` double,
   `fear` double,
   `surprise` double
-) COMMENT "Test table for customer - product table, 20.05."
+)
 ROW FORMAT SERDE 'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe'
-STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat' OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
-LOCATION 's3://ccbda-custbucket-test/product1/processed/'
-TBLPROPERTIES ('classification' = 'parquet');
+STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'
+OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'
+LOCATION 's3://ccbda-custbucket-test/product1/glue/'
+TBLPROPERTIES (
+    'classification' = 'parquet',
+    'parquet.compress' = 'SNAPPY'
+);
