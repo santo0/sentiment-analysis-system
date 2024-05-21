@@ -207,3 +207,6 @@ batch_customer_*.zip
 consumer_customer_*.zip
 mock_api.zip
 producer.zip
+# Pycharm
+.DS_Store
+**/.DS_Store
