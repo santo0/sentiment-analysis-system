@@ -10,13 +10,18 @@ Dataset: https://www.kaggle.com/datasets/kazanova/sentiment140
 
 raw data bucket
 ```
-    bucket/
-        - customer_1
-            - raw_tweet_batch_1
-            ...
-            - raw_tweet_batch_N
+    bucket_customer1:
+        - product_1/
+            - raw/
+                - raw_tweet_batch_1.json
+                ...
+                - raw_tweet_batch_N.json
+            - processed/
+                - processed_results_1.parquet
+                ...
+                - processed_results_N.parquet
         ...
-        - customer_M
+        - product_M.feature_K
             ...
 ```
 
@@ -40,3 +45,6 @@ Requirements:
 - requirements.txt installed
 
 
+
+## Data ingestion pipeline
+![Data Ingestion Pipeline](./figures/ingestion_pipeline.png)

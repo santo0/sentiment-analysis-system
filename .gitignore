@@ -200,9 +200,13 @@ terraform.rc
 archive.zip
 training.1600000.processed.noemoticon.csv
 test.csv
-
 env.txt
+splitted/
 
+batch_customer_*.zip
+consumer_customer_*.zip
+mock_api.zip
+producer.zip
 # Pycharm
 .DS_Store
 **/.DS_Store

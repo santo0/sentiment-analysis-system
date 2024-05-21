@@ -7,7 +7,7 @@ module "data_analytics" {
 }
 
 module "data_ingestion" {
-    source = "./modules/data_prediction"
+    source = "./modules/data_ingestion"
 }
 
 module "data_prediction" {
