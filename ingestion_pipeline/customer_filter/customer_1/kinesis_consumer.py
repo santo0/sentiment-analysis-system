@@ -1,5 +1,4 @@
 from datetime import datetime
-from boto3.dynamodb.conditions import Key
 import boto3
 import json
 import logging
@@ -8,16 +7,15 @@ import base64
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# Initialize AWS clients
-kinesis_client = boto3.client('kinesis', )
 dynamodb_client = boto3.client('dynamodb',)
-dynamodb_resource = boto3.resource('dynamodb',)
 
-# Define Kinesis stream and DynamoDB table names
-stream_name = 'tweet_ingestion_stream'
-table_name = 'customerN.productM.featureK'
-
-# Function to read records from Kinesis stream
+# table_name = 'customerN.productM.featureK'
+CUSTOMER_NAME = 'customer1'
+# table_names = ['customer1.what', 'customer1.what.and', 'customer1.why']
+FILTERS = {
+    'what': ['and'],
+    'why': None,
+}
 
 
 def read_kinesis_records(event):
@@ -28,23 +26,35 @@ def read_kinesis_records(event):
         print(process_record(record))
 
 
-# Function to process individual records and put them into DynamoDB
+def get_tables_to_ingest(text):
+    tables_to_ingest = []
+    for product, features in FILTERS.items():
+        if product in text:
+            if features and all(feature in text for feature in features):
+                tables_to_ingest.append(
+                    f'{CUSTOMER_NAME}.{product}.{features}')
+            else:
+                tables_to_ingest.append(f'{CUSTOMER_NAME}.{product}')
+    return tables_to_ingest
 
 
 def process_record(record):
-    data = record['data'].decode('latin-1')  # Assuming data is encoded in UTF-8
-    print(type(data), data)
+    b64_data = record['kinesis']['data']
+    decoded_data = base64.b64decode(b64_data).decode('utf-8')
+    print(decoded_data)
     # convert data to json
-    tweet_id = str(json.loads(data)['ids'])
+    tweet_md = json.loads(decoded_data)
+    tweet_id = str(tweet_md['ids'])
     item = {
         'tweet_id': {'N': tweet_id},
         'creation_date': {'S': datetime.utcnow().isoformat()},
-        'tweet': {'S': data},
+        'tweet': {'S': decoded_data},
     }
     print(item)
+    tables_to_ingest = get_tables_to_ingest(tweet_md['text'].lower())
+    for table_name in tables_to_ingest:
+        dynamodb_client.put_item(TableName=table_name, Item=item)
 
-    # Put item into DynamoDB
-    dynamodb_client.put_item(TableName=table_name, Item=item)
 
 def lambda_handler(event, context):
     read_kinesis_records(event)
