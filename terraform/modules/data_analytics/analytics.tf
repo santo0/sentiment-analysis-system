@@ -1,22 +1,22 @@
-# create the variable for the data analytics output bucket name
-variable "data_analytics_output_bucket_name" {
-  type = string
-}
+# # create the variable for the data analytics output bucket name
+# variable "data_analytics_output_bucket_name" {
+#   type = string
+# }
 
-variable "athena_database_name" {
-  type = string
-}
+# variable "athena_database_name" {
+#   type = string
+# }
 
-variable "athena_table_name" {
-  type = string
-}
+# variable "athena_table_name" {
+#   type = string
+# }
 
-variable "s3_table_location" {
-  type = string
-}
+# variable "s3_table_location" {
+#   type = string
+# }
 
 resource "aws_s3_bucket" "data_analytics_output_bucket" {
-  bucket = "${var.data_analytics_output_bucket_name}"
+  bucket = var.s3_bucket_name
 
   lifecycle {
     prevent_destroy = true
@@ -35,7 +35,7 @@ resource "aws_athena_workgroup" "sentiment-analysis-athena-wrkg" {
 
 resource "aws_athena_database" "athena-db" {
   name   = var.athena_database_name
-  bucket = aws_s3_bucket.athena_results.bucket
+  bucket = aws_s3_bucket.data_analytics_output_bucket.bucket
 }
 
 resource "aws_glue_catalog_table" "sentiment-analysis-ct" {
@@ -121,68 +121,31 @@ resource "aws_glue_catalog_table" "sentiment-analysis-ct" {
   }
 }
 
-# resource "aws_iam_role" "athena" {
-#   name = "athena-s3-access-role"
+resource "null_resource" "create_view" {
+  provisioner "local-exec" {
+    command = <<EOT
+      aws athena start-query-execution \
+        --region us-east-1 \
+        --query-string "CREATE OR REPLACE VIEW ${var.athena_database_name}.emotion_sums_long AS SELECT 'sadness' AS emotion, SUM(sadness) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'joy' AS emotion, SUM(joy) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'love' AS emotion, SUM(love) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'anger' AS emotion, SUM(anger) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'fear' AS emotion, SUM(fear) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'surprise' AS emotion, SUM(surprise) AS value FROM ${var.athena_database_name}.cust_test_table;" \
+        --query-execution-context Database=${var.athena_database_name} \
+        --result-configuration "OutputLocation=s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/query-results/"
+    EOT
+  }
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [{
-#       Action = "sts:AssumeRole",
-#       Effect = "Allow",
-#       Principal = {
-#         Service = "athena.amazonaws.com"
-#       }
-#     }]
-#   })
-# }
+  depends_on = [aws_glue_catalog_table.sentiment-analysis-ct]
+}
 
-# resource "aws_iam_policy" "athena_s3_access" {
-#   name        = "athena-s3-access-policy"
-#   description = "Policy to allow Athena to access S3 buckets"
-#   policy      = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Action = [
-#           "s3:GetObject",
-#           "s3:PutObject"
-#         ],
-#         Effect   = "Allow",
-#         Resource = "${aws_s3_bucket.athena_results.arn}/*"
-#       },
-#       {
-#         Action   = "s3:ListBucket",
-#         Effect   = "Allow",
-#         Resource = aws_s3_bucket.athena_results.arn
-#       }
-#     ]
-#   })
-# }
 
-# resource "aws_iam_role_policy_attachment" "attach_athena_s3_access" {
-#   role       = aws_iam_role.athena.name
-#   policy_arn = aws_iam_policy.athena_s3_access.arn
-# }
+# Code to run queries on the Athena table
+# resource "null_resource" "run_custom_query" {
+#   provisioner "local-exec" {
+#     command = <<EOT
+#       aws athena start-query-execution \
+#         --query-string "SELECT * FROM ${aws_glue_catalog_table.cust_test_table.database_name}.${aws_glue_catalog_table.cust_test_table.name} LIMIT 10;" \
+#         --query-execution-context Database=${aws_glue_catalog_table.cust_test_table.database_name} \
+#         --result-configuration "OutputLocation=s3://${aws_s3_bucket.query_results.bucket}/query-results/"
+#     EOT
+#   }
 
-# resource "aws_s3_bucket_policy" "quicksight_access" {
-#   bucket = aws_s3_bucket.athena_results.bucket
-#   policy = jsonencode({
-#     Version = "2012-10-17",
-#     Statement = [
-#       {
-#         Action = [
-#           "s3:GetObject",
-#           "s3:ListBucket"
-#         ],
-#         Effect   = "Allow",
-#         Resource = [
-#           aws_s3_bucket.athena_results.arn,
-#           "${aws_s3_bucket.athena_results.arn}/*"
-#         ],
-#         Principal = {
-#           Service = "quicksight.amazonaws.com"
-#         }
-#       }
-#     ]
-#   })
+#   depends_on = [aws_glue_catalog_table.cust_test_table]
 # }

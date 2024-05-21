@@ -4,7 +4,11 @@ module "storage" {
 
 module "data_analytics" {
     source = "./modules/data_analytics"
-    data_analytics_output_bucket_name = "ccbda-analytics-output-bucket"
+    s3_bucket_name = "ccbda-analytics-output-bucket"
+    existing_iam_role_arn = "arn:aws:iam::211125730795:role/LabRole"
+    athena_database_name = "tweetsdb"
+    athena_table_name = "cust_test_table"
+    s3_table_location = "s3://ccbda-analytics-output-bucket/product1/processed/"
 }
 
 module "data_ingestion" {
