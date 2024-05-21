@@ -18,9 +18,9 @@
 resource "aws_s3_bucket" "data_analytics_output_bucket" {
   bucket = var.s3_bucket_name
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "aws_athena_workgroup" "sentiment-analysis-athena-wrkg" {
@@ -36,6 +36,14 @@ resource "aws_athena_workgroup" "sentiment-analysis-athena-wrkg" {
 resource "aws_athena_database" "athena-db" {
   name   = var.athena_database_name
   bucket = aws_s3_bucket.data_analytics_output_bucket.bucket
+
+   depends_on = [
+    null_resource.delete_view
+  ]
+
+  lifecycle {
+    ignore_changes = [bucket]
+  }
 }
 
 resource "aws_glue_catalog_table" "sentiment-analysis-ct" {
@@ -135,6 +143,19 @@ resource "null_resource" "create_view" {
   depends_on = [aws_glue_catalog_table.sentiment-analysis-ct]
 }
 
+resource "null_resource" "delete_view" {
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<EOT
+      aws athena start-query-execution \
+        --region us-east-1 \
+        --query-string "DROP VIEW IF EXISTS tweetsdb.emotion_sums_long;" \
+        --query-execution-context Database=tweetsdb \
+        --result-configuration "OutputLocation=s3://ccbda-analytics-output-bucket/query-results/"
+    EOT
+  }
+
+}
 
 # Code to run queries on the Athena table
 # resource "null_resource" "run_custom_query" {
