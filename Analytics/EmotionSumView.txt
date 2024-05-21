@@ -1,0 +1,13 @@
+CREATE OR REPLACE VIEW tweetsdb.emotion_sums_long AS
+SELECT 'sadness' AS emotion, SUM(sadness) AS value FROM tweetsdb.cust_test_table
+UNION ALL
+SELECT 'joy' AS emotion, SUM(joy) AS value FROM tweetsdb.cust_test_table
+UNION ALL
+SELECT 'love' AS emotion, SUM(love) AS value FROM tweetsdb.cust_test_table
+UNION ALL
+SELECT 'anger' AS emotion, SUM(anger) AS value FROM tweetsdb.cust_test_table
+UNION ALL
+SELECT 'fear' AS emotion, SUM(fear) AS value FROM tweetsdb.cust_test_table
+UNION ALL
+SELECT 'surprise' AS emotion, SUM(surprise) AS value FROM tweetsdb.cust_test_table;
+emotion_sums_long 
