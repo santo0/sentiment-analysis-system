@@ -31,9 +31,9 @@ resource "aws_athena_database" "athena-db" {
   bucket = aws_s3_bucket.data_analytics_output_bucket.bucket
 
 
-  depends_on = [
-    null_resource.delete_view
-  ]
+  # depends_on = [
+  #   null_resource.delete_view
+  # ]
 }
 
 resource "aws_glue_catalog_table" "sentiment-analysis-ct" {
@@ -133,19 +133,21 @@ resource "null_resource" "create_view" {
   depends_on = [aws_glue_catalog_table.sentiment-analysis-ct]
 }
 
-resource "null_resource" "delete_view" {
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<EOT
-      aws athena start-query-execution \
-        --region us-east-1 \
-        --query-string "DROP VIEW IF EXISTS tweetsdb.emotion_sums_long;" \
-        --query-execution-context Database=tweetsdb \
-        --result-configuration "OutputLocation=s3://ccbda-analytics-output-bucket/results/"
-    EOT
-  }
+# resource "null_resource" "delete_view" {
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<EOT
+#       aws athena start-query-execution \
+#         --region us-east-1 \
+#         --query-string "DROP VIEW IF EXISTS tweetsdb.emotion_sums_long;" \
+#         --query-execution-context Database=tweetsdb \
+#         --result-configuration "OutputLocation=s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/results/"
+#     EOT
+#   }
 
-}
+#   depends_on = [ aws_s3_bucket.data_analytics_output_bucket.bucket ]
+
+# }
 
 resource "aws_glue_job" "parse_date_job" {
   name     = var.glue_job_name
@@ -158,11 +160,10 @@ resource "aws_glue_job" "parse_date_job" {
   }
 
   default_arguments = {
-    "--TempDir"                = var.temporary_directory
-    "--enable-metrics"         = "true"
-    "--enable-continuous-log-filter" = "true"
-    "--job-bookmark-option"    = "job-bookmark-disable"
-    # "--additional-python-modules" = var.python_path
+    "--TempDir"                        = var.temporary_directory
+    "--enable-metrics"                 = "true"
+    "--enable-continuous-log-filter"   = "true"
+    "--job-bookmark-option"            = "job-bookmark-disable"
   }
 
   max_retries          = var.max_retries
