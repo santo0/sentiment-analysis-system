@@ -23,7 +23,7 @@ resource "aws_s3_bucket_public_access_block" "derived_public_access" {
 
 
 resource "aws_s3_bucket" "customer_1_bucket" {
-  bucket = "ccbda-customer-1-bucket" # name must be unique in all AWS
+  bucket = "ccbda-customer-1-bucket-123" # name must be unique in all AWS
 }
 
 resource "aws_s3_bucket_public_access_block" "customer_1_public_access" {
@@ -34,7 +34,7 @@ resource "aws_s3_bucket_public_access_block" "customer_1_public_access" {
 }
 
 resource "aws_s3_bucket" "customer_2_bucket" {
-  bucket = "ccbda-customer-2-bucket" # name must be unique in all AWS
+  bucket = "ccbda-customer-2-bucket-123" # name must be unique in all AWS
 }
 
 resource "aws_s3_bucket_public_access_block" "customer_2_public_access" {

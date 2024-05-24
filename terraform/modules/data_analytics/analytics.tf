@@ -1,3 +1,7 @@
+data "aws_iam_role" "lab_role" {
+  name = "LabRole"
+}
+
 resource "aws_s3_bucket" "data_analytics_output_bucket" {
   bucket = var.s3_bucket_name
 }
@@ -16,20 +20,22 @@ resource "aws_athena_workgroup" "sentiment-analysis-athena-wrkg" {
   state = "ENABLED"
 
   configuration {
-    execution_role = var.iam_role_arn
-    enforce_workgroup_configuration    = true
-    publish_cloudwatch_metrics_enabled = true
+    # arn:aws:iam::211125730795:role/service-role/aws-quicksight-service-role-v0
+    execution_role = data.aws_iam_role.lab_role.arn
+    # enforce_workgroup_configuration    = true
+    # publish_cloudwatch_metrics_enabled = true
 
     result_configuration {
-      output_location = "s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/"
+      output_location = "s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/athena-results/wrkg/"
     }
   }
 }
 
 resource "aws_athena_database" "athena-db" {
   name   = var.athena_database_name
+  # set the bucket to an specific folder of the output bucket
+  # bucket = "s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/athena-results/db/"
   bucket = aws_s3_bucket.data_analytics_output_bucket.bucket
-
 
   # depends_on = [
   #   null_resource.delete_view
@@ -151,7 +157,7 @@ resource "null_resource" "create_view" {
 
 resource "aws_glue_job" "parse_date_job" {
   name     = var.glue_job_name
-  role_arn = var.iam_role_arn
+  role_arn = data.aws_iam_role.lab_role.arn
 
   command {
     name            = "glueetl"
@@ -196,14 +202,34 @@ resource "aws_s3_object" "glue_script" {
   depends_on = [ aws_s3_bucket.glue_s3_bucket ]
 }
 
+# resource "aws_quicksight_data_set" "test_table" {
+#   data_set_id = "test_table-id"
+#   name        = "test_table"
+#   import_mode = "SPICE"
+
+#   physical_table_map {
+#     physical_table_map_id = "test_table-id"
+#     s3_source {
+#       data_source_arn = aws_quicksight_data_source.example.arn
+#       input_columns {
+#         name = "Column1"
+#         type = "STRING"
+#       }
+#       upload_settings {
+#         format = "JSON"
+#       }
+#     }
+#   }
+# }
+
 # resource "aws_quicksight_data_source" "emotion_sums_long" {
-#   data_source_id = "emotion_sums_long-data-source"
+#   data_source_id = "emotion_sums_long"
 #   name           = "emotion_sums_long"
 #   type           = "ATHENA"
 
 #   parameters {
 #     athena {
-#       work_group = aws_athena_workgroup.sentiment-analysis-athena-wrkg.name
+#       work_group = "primary"
 #     }
 #   }
 # }

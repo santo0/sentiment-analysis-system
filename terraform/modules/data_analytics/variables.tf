@@ -28,12 +28,6 @@ variable "glue_job_name" {
   default = "ParseDateJob"
 }
 
-variable "iam_role_arn" {
-  description = "extisting LabRole"
-  type = string
-  default = "arn:aws:iam::211125730795:role/LabRole"
-}
-
 variable "glue_s3_bucket_name" {
   description = "The name of the S3 bucket for Glue assets"
   type        = string

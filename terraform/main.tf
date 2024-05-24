@@ -10,8 +10,6 @@ module "data_analytics" {
     athena_database_name = "tweetsdb"
     athena_table_name = "cust_test_table"
     s3_table_location = "s3://ccbda-analytics-output-bucket-111/product1/processed/"
-    # change the iam role to your account one
-    iam_role_arn = "arn:aws:iam::211125730795:role/LabRole"
     glue_s3_bucket_name = "aws-glue-assets-bucket-111"
     script_location = "s3://aws-glue-assets-bucket-111/scripts/ParseDateJob.py"
     temporary_directory = "s3://aws-glue-assets-bucket-111/temporary/"

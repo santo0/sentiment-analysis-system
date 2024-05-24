@@ -3,10 +3,10 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.data_analytics_output_bucket.bucket
 }
 
-output "athena_workgroup_name" {
-  description = "The name of the Athena workgroup"
-  value       = aws_athena_workgroup.sentiment-analysis-athena-wrkg.name
-}
+# output "athena_workgroup_name" {
+#   description = "The name of the Athena workgroup"
+#   value       = aws_athena_workgroup.sentiment-analysis-athena-wrkg.name
+# }
 
 output "athena_database_name" {
   description = "The name of the Athena database"
