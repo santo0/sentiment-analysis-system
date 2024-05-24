@@ -44,9 +44,9 @@ def MyTransform(glueContext, dfc) -> DynamicFrameCollection:
     return DynamicFrameCollection({"new_dynamic_frame": new_dynamic_frame}, glueContext)
     
 # VARIABLES: SET THEM BASED ON TERRAFORM DEPLOY
-s3_bucket_path = "s3://ccbda-analytics-output-bucket-111/product1/processed"
-athena_db_name = "tweetsdb"
-athena_table_name = "cust_test_table"
+s3_bucket_path = "s3://ccbda-customer-1-bucket-1/what/processed/"
+athena_db_name = "ccbda_database"
+athena_table_name = "ccbda_table"
 
 
 # Sample Glue script to use the transformation        

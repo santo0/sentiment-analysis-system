@@ -2,17 +2,11 @@ data "aws_iam_role" "lab_role" {
   name = "LabRole"
 }
 
-resource "aws_s3_bucket" "data_analytics_output_bucket" {
-  bucket = var.s3_bucket_name
-}
-
 resource "aws_s3_object" "processed_data" {
-  bucket = var.s3_bucket_name
-  key    = "/product1/processed/processed_data.parquet"
+  bucket = var.customer_1_bucket
+  key    = "/what/processed/processed_data.parquet"
   source = "./modules/data_analytics/data/202405101559171535676626.parquet"
   acl    = "private"
-
-  depends_on = [ aws_s3_bucket.data_analytics_output_bucket ]
 }
 
 resource "aws_athena_workgroup" "sentiment-analysis-athena-wrkg" {
@@ -20,13 +14,12 @@ resource "aws_athena_workgroup" "sentiment-analysis-athena-wrkg" {
   state = "ENABLED"
 
   configuration {
-    # arn:aws:iam::211125730795:role/service-role/aws-quicksight-service-role-v0
     execution_role = data.aws_iam_role.lab_role.arn
     # enforce_workgroup_configuration    = true
     # publish_cloudwatch_metrics_enabled = true
 
     result_configuration {
-      output_location = "s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/athena-results/wrkg/"
+      output_location = "s3://${var.customer_1_bucket}/analytics/wrkg/"
     }
   }
 }
@@ -35,7 +28,7 @@ resource "aws_athena_database" "athena-db" {
   name   = var.athena_database_name
   # set the bucket to an specific folder of the output bucket
   # bucket = "s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/athena-results/db/"
-  bucket = aws_s3_bucket.data_analytics_output_bucket.bucket
+  bucket = var.customer_1_bucket
 
   # depends_on = [
   #   null_resource.delete_view
@@ -130,9 +123,9 @@ resource "null_resource" "create_view" {
     command = <<EOT
       aws athena start-query-execution \
         --region us-east-1 \
-        --query-string "CREATE OR REPLACE VIEW ${var.athena_database_name}.emotion_sums_long AS SELECT 'sadness' AS emotion, SUM(sadness) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'joy' AS emotion, SUM(joy) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'love' AS emotion, SUM(love) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'anger' AS emotion, SUM(anger) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'fear' AS emotion, SUM(fear) AS value FROM ${var.athena_database_name}.cust_test_table UNION ALL SELECT 'surprise' AS emotion, SUM(surprise) AS value FROM ${var.athena_database_name}.cust_test_table;" \
+        --query-string "CREATE OR REPLACE VIEW ${var.athena_database_name}.emotions_view AS SELECT 'sadness' AS emotion, SUM(sadness) AS value FROM ${var.athena_database_name}.${var.athena_table_name} UNION ALL SELECT 'joy' AS emotion, SUM(joy) AS value FROM ${var.athena_database_name}.${var.athena_table_name} UNION ALL SELECT 'love' AS emotion, SUM(love) AS value FROM ${var.athena_database_name}.${var.athena_table_name} UNION ALL SELECT 'anger' AS emotion, SUM(anger) AS value FROM ${var.athena_database_name}.${var.athena_table_name} UNION ALL SELECT 'fear' AS emotion, SUM(fear) AS value FROM ${var.athena_database_name}.${var.athena_table_name} UNION ALL SELECT 'surprise' AS emotion, SUM(surprise) AS value FROM ${var.athena_database_name}.${var.athena_table_name};" \
         --query-execution-context Database=${var.athena_database_name} \
-        --result-configuration "OutputLocation=s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/query-results/"
+        --result-configuration "OutputLocation=s3://${var.customer_1_bucket}/what/analytics/query-results/"
     EOT
   }
 

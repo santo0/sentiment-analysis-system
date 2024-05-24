@@ -8,7 +8,7 @@ s3 = boto3.client('s3')
 
 # Get environment variables
 table_names = ['customer1.what', 'customer1.what.and', 'customer1.why']
-bucket_name = 'ccbda-customer-1-bucket'
+bucket_name = 'ccbda-customer-1-bucket-1'
 
 
 def get_items_without_batch_date(table):

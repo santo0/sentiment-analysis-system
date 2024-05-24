@@ -1,4 +1,3 @@
-# create s3 bucket
 resource "aws_s3_bucket" "ccbda-system-config" {
   bucket = var.ccbda-system-config
 }
@@ -22,24 +21,24 @@ resource "aws_s3_object" "glue_script" {
   depends_on = [ aws_s3_bucket.ccbda-system-config ]
 }
 
-# resource "aws_s3_bucket" "customer_1_bucket" {
-#   bucket = "ccbda-customer-1-bucket-123" # name must be unique in all AWS
-# }
+resource "aws_s3_bucket" "customer_1_bucket" {
+  bucket = var.customer_1_bucket
+}
 
-# resource "aws_s3_bucket_public_access_block" "customer_1_public_access" {
-#   bucket = aws_s3_bucket.customer_1_bucket.id
+resource "aws_s3_bucket_public_access_block" "customer_1_public_access" {
+  bucket = aws_s3_bucket.customer_1_bucket.id
 
-#   block_public_acls   = false
-#   block_public_policy = false
-# }
+  block_public_acls   = false
+  block_public_policy = false
+}
 
-# resource "aws_s3_bucket" "customer_2_bucket" {
-#   bucket = "ccbda-customer-2-bucket-123" # name must be unique in all AWS
-# }
+resource "aws_s3_bucket" "customer_2_bucket" {
+  bucket = var.customer_2_bucket
+}
 
-# resource "aws_s3_bucket_public_access_block" "customer_2_public_access" {
-#   bucket = aws_s3_bucket.customer_2_bucket.id
+resource "aws_s3_bucket_public_access_block" "customer_2_public_access" {
+  bucket = aws_s3_bucket.customer_2_bucket.id
 
-#   block_public_acls   = false
-#   block_public_policy = false
-# }
+  block_public_acls   = false
+  block_public_policy = false
+}
