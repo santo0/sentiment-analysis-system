@@ -2,12 +2,12 @@ data "aws_iam_role" "lab_role" {
   name = "LabRole"
 }
 
-resource "aws_s3_object" "processed_data" {
-  bucket = var.customer_1_bucket
-  key    = "/what/processed/processed_data.parquet"
-  source = "./modules/data_analytics/data/202405101559171535676626.parquet"
-  acl    = "private"
-}
+# resource "aws_s3_object" "processed_data" {
+#   bucket = var.customer_1_bucket
+#   key    = "/what/processed/processed_data.parquet"
+#   source = "./modules/data_analytics/data/202405101559171535676626.parquet"
+#   acl    = "private"
+# }
 
 resource "aws_athena_workgroup" "sentiment-analysis-athena-wrkg" {
   name = "athena-workgroup"

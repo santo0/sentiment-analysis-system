@@ -44,7 +44,7 @@ def MyTransform(glueContext, dfc) -> DynamicFrameCollection:
     return DynamicFrameCollection({"new_dynamic_frame": new_dynamic_frame}, glueContext)
     
 # VARIABLES: SET THEM BASED ON TERRAFORM DEPLOY
-s3_bucket_path = "s3://ccbda-customer-1-bucket-1/what/processed/"
+s3_bucket_path = "s3://ccbda-customer-1-bucket-121/what/processed/"
 athena_db_name = "ccbda_database"
 athena_table_name = "ccbda_table"
 
