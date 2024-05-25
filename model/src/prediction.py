@@ -21,7 +21,6 @@ while True:
             print(key)
             predict_key = key.replace('batch', 'processed_results')
             predict_key = predict_key.replace('.json', '.parquet')
-            predict_key = predict_key.replace('.json', '.parquet')
             if key.endswith('.json') and 'batch' in key:
                 data = s3.get_object(Bucket=s3_bucket_read, Key=key)
                 data = json.loads(data['Body'].read().decode('utf-8'))
@@ -45,11 +44,12 @@ while True:
 
                 ## Concat with original file - this will ease its use
                 df_output = pd.concat([df, df_answers], axis=1)
-                print(df_output)
                 # convert df to parquet
                 df_parquet = df_output.to_parquet()
+                print("TO parquet")
                 # write to s3
                 s3.put_object(Bucket=s3_bucket_write, Key=f"processed/{predict_key}", Body=df_parquet)
+                print("TO s3")
 
                 # Delete the raw file from the input bucket
                 s3.delete_object(Bucket=s3_bucket_read, Key=key)
