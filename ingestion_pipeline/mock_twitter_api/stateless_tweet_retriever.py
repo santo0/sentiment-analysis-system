@@ -89,7 +89,7 @@ def read_tweets(bucket_name, file_name, offset, limit):
     return tweets
 
 def lambda_handler(event, context):
-    bucket_name = 'ccbda-system-config-1'
+    bucket_name = 'ccbda-system-config-121'
     file_name = f'twitter_dataset/data_{random.randint(1,200)}.csv'
     offset = random.randint(0, 7891)
     limit = random.randint(10, 100)
