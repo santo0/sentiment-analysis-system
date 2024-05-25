@@ -10,8 +10,8 @@ from time import sleep
 clf = pipeline("text-classification",model='bhadresh-savani/distilbert-base-uncased-emotion', top_k=None)
 
 ## Output bucket in S3
-s3_bucket_read = "sentimentanalysisccbda"
-s3_bucket_write = "sentimentanalysisccbdaprediction"
+s3_bucket_read = "ccbda-customer-1-nacho"
+s3_bucket_write = "ccbda-customer-1-nacho"
 s3 = boto3.client('s3')
 while True:
     response = s3.list_objects_v2(Bucket=s3_bucket_read)
@@ -19,11 +19,13 @@ while True:
         for obj in response['Contents']:
             key = obj['Key']
             print(key)
-            predict_key = key.replace('raw_tweet_batch', 'processed_results')
+            predict_key = key.replace('batch', 'processed_results')
             predict_key = predict_key.replace('.json', '.parquet')
-            if key.endswith('.json') and 'raw_tweet' in key:
+            predict_key = predict_key.replace('.json', '.parquet')
+            if key.endswith('.json') and 'batch' in key:
                 data = s3.get_object(Bucket=s3_bucket_read, Key=key)
                 data = json.loads(data['Body'].read().decode('utf-8'))
+                print(data)
                 df = pd.json_normalize(data['tweets'])
 
                 ## Let's predict!
@@ -47,11 +49,13 @@ while True:
                 # convert df to parquet
                 df_parquet = df_output.to_parquet()
                 # write to s3
-                s3.put_object(Bucket=s3_bucket_write, Key=predict_key, Body=df_parquet)
+                s3.put_object(Bucket=s3_bucket_write, Key=f"processed/{predict_key}", Body=df_parquet)
+
+                # Delete the raw file from the input bucket
+                s3.delete_object(Bucket=s3_bucket_read, Key=key)
+                print(f"Deleted {key} from {s3_bucket_read}")
     else:
         print("Bucket is empty or does not exist.")
 
     print("Checking for content in the s3 10 minutes")
     sleep(600) # sleep for 10 minutes
-
-
