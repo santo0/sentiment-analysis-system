@@ -14,7 +14,7 @@ CUSTOMER_NAME = 'customer1'
 # table_names = ['customer1.what', 'customer1.what.and', 'customer1.why']
 FILTERS = {
     'what': ['and'],
-    'why': None,
+    'why': [],
 }
 
 
@@ -27,15 +27,16 @@ def read_kinesis_records(event):
 
 
 def get_tables_to_ingest(text):
-    tables_to_ingest = []
+    tables_to_ingest = set()
     for product, features in FILTERS.items():
         if product in text:
-            if features and all(feature in text for feature in features):
-                tables_to_ingest.append(
-                    f'{CUSTOMER_NAME}.{product}.{features}')
-            else:
-                tables_to_ingest.append(f'{CUSTOMER_NAME}.{product}')
-    return tables_to_ingest
+            for feature in features:
+                if feature in text:
+                    tables_to_ingest.add(
+                        f'{CUSTOMER_NAME}.{product}.{feature}')
+                else:
+                    tables_to_ingest.add(f'{CUSTOMER_NAME}.{product}')
+    return list(tables_to_ingest)
 
 
 def process_record(record):

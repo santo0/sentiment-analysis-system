@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
 data "aws_iam_instance_profile" "instance_profile" {
   name = "LabInstanceProfile"
 }

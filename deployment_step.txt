@@ -1,0 +1,9 @@
+Assuming Terraform deployed and config
+
+1. Donwload dataset: https://www.kaggle.com/datasets/kazanova/sentiment140
+2. unzip and save in in ./ingestion_pipeline/mock_twitter_api/data
+3. run file_sparator.py
+4. change storage ./terraform/modules/common/variables.tf ccbda-system-config name to be unique
+5. set the name in ./ingestion_pipeline/mock_twitter_api/stateless_tweet_retriever.py line 92 to mach the bucket name
+6. in ./terraform/modules/common/variables.tf set the customer bucket names to a unique one
+7. then update the name in ./ingestion_pipeline/batch_loader/customer_1/table_consumer.py 
