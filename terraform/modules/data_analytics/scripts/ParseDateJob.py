@@ -7,7 +7,7 @@ from awsglue.job import Job
 from awsglue.dynamicframe import DynamicFrameCollection
 from awsglue.dynamicframe import DynamicFrame
 from pyspark.sql.types import StringType
-from pyspark.sql.functions import udf, to_timestamp, lit
+from pyspark.sql.functions import udf, to_timestamp, lit, col
 import pytz
 import dateutil.parser
 
