@@ -228,7 +228,7 @@ resource "aws_quicksight_data_set" "table-data" {
       name          = var.athena_table_name
       input_columns {
       name = "age"
-      type = "bigint"
+      type = "integer"
       }
       input_columns {
         name = "country"
@@ -248,11 +248,11 @@ resource "aws_quicksight_data_set" "table-data" {
       }
       input_columns {
         name = "ids"
-        type = "bigint"
+        type = "integer"
       }
       input_columns {
         name = "target"
-        type = "bigint"
+        type = "integer"
       }
       input_columns {
         name = "text"
@@ -264,27 +264,27 @@ resource "aws_quicksight_data_set" "table-data" {
       }
       input_columns {
         name = "sadness"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "joy"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "love"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "anger"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "fear"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "surprise"
-        type = "double"
+        type = "decimal"
       }
     }
   }
@@ -303,27 +303,27 @@ resource "aws_quicksight_data_set" "emotions-view" {
       name          = "emotions_data"
       input_columns {
         name = "sadness"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "joy"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "love"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "anger"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "fear"
-        type = "double"
+        type = "decimal"
       }
       input_columns {
         name = "surprise"
-        type = "double"
+        type = "decimal"
       }
     }
   }
