@@ -10,7 +10,7 @@ resource "aws_s3_bucket_public_access_block" "ccbda-system-config_public_access"
 }
 
 # upload all the files in the system_config directory to the s3 bucket
-resource "aws_s3_object" "glue_script" {
+resource "aws_s3_object" "api_data" {
   bucket = var.ccbda-system-config
   # upload all the files in ingestion_pipeline/mock_twitter_api/data/splitted/*.csv
   for_each = fileset("../ingestion_pipeline/mock_twitter_api/data/splitted/", "**/*")
