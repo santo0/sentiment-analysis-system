@@ -14,6 +14,7 @@ s3_bucket_read = "ccbda-customer-1-bucket-121"
 s3_bucket_write = "ccbda-customer-1-bucket-121"
 s3 = boto3.client('s3')
 while True:
+    date_now = datetime.datetime.now()
     response = s3.list_objects_v2(Bucket=s3_bucket_read)
     if 'Contents' in response:
         for obj in response['Contents']:
@@ -45,6 +46,7 @@ while True:
 
                 ## Concat with original file - this will ease its use
                 df_output = pd.concat([df, df_answers], axis=1)
+                df_output['timestamp'] = date_now
                 # convert df to parquet
                 df_parquet = df_output.to_parquet()
                 print("TO parquet")

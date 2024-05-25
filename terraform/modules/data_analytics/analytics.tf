@@ -65,7 +65,7 @@ resource "aws_glue_catalog_table" "sentiment-analysis-ct" {
     }
     columns {
       name = "date"
-      type = "string"
+      type = "timestamp"
     }
     columns {
       name = "flag"
@@ -114,6 +114,10 @@ resource "aws_glue_catalog_table" "sentiment-analysis-ct" {
     columns {
       name = "surprise"
       type = "double"
+    }
+    columns {
+      name = "timestamp"
+      type = "timestamp"
     }
   }
 }
@@ -168,7 +172,7 @@ resource "aws_glue_job" "parse_date_job" {
   max_retries          = var.max_retries
   timeout              = var.timeout
   glue_version         = "4.0"
-  number_of_workers    = 10
+  number_of_workers    = 2
   worker_type          = "G.1X"
   execution_class      = "STANDARD"
   tags = {
@@ -178,6 +182,18 @@ resource "aws_glue_job" "parse_date_job" {
   execution_property {
     max_concurrent_runs = var.max_concurrent_runs
   }
+}
+
+resource "aws_glue_trigger" "parse_job_trigger" {
+  name     = "parse-trigger"
+  type     = "SCHEDULED"
+  schedule = "rate(10 minutes)"  # This expression schedules the job to run every 10 minutes
+
+  actions {
+    job_name = aws_glue_job.parse_date_job.name
+  }
+
+  start_on_creation = true
 }
 
 # create an s3 bucket with glue_s3_bucket_name name
