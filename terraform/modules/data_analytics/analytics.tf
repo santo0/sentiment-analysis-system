@@ -136,22 +136,6 @@ resource "null_resource" "create_view" {
   depends_on = [aws_glue_catalog_table.sentiment-analysis-ct]
 }
 
-# resource "null_resource" "delete_view" {
-#   provisioner "local-exec" {
-#     when    = destroy
-#     command = <<EOT
-#       aws athena start-query-execution \
-#         --region us-east-1 \
-#         --query-string "DROP VIEW IF EXISTS tweetsdb.emotion_sums_long;" \
-#         --query-execution-context Database=tweetsdb \
-#         --result-configuration "OutputLocation=s3://${aws_s3_bucket.data_analytics_output_bucket.bucket}/results/"
-#     EOT
-#   }
-
-#   depends_on = [ aws_s3_bucket.data_analytics_output_bucket.bucket ]
-
-# }
-
 resource "aws_glue_job" "parse_date_job" {
   name     = var.glue_job_name
   role_arn = data.aws_iam_role.lab_role.arn
@@ -211,101 +195,136 @@ resource "aws_s3_object" "glue_script" {
   depends_on = [ aws_s3_bucket.glue_s3_bucket ]
 }
 
-# resource "aws_quicksight_data_set" "test_table" {
-#   data_set_id = "test_table-id"
-#   name        = "test_table"
-#   import_mode = "SPICE"
 
-#   physical_table_map {
-#     physical_table_map_id = "test_table-id"
-#     s3_source {
-#       data_source_arn = aws_quicksight_data_source.example.arn
-#       input_columns {
-#         name = "Column1"
-#         type = "STRING"
-#       }
-#       upload_settings {
-#         format = "JSON"
-#       }
-#     }
-#   }
-# }
+# Define the QuickSight Data Source for Athena
+resource "aws_quicksight_data_source" "quicksight-data-source" {
+  data_source_id = "quicksight-athena-source"
+  name           = "ccbda-project"
+  type           = "ATHENA"
+  parameters {
+    athena {
+      work_group = "athena-workgroup"
+    }
+  }
 
-# resource "aws_quicksight_data_source" "emotion_sums_long" {
-#   data_source_id = "emotion_sums_long"
-#   name           = "emotion_sums_long"
-#   type           = "ATHENA"
+  # permission {
+  #   principal = "arn:aws:quicksight:us-east-1:123456789012:user/default/quicksight-user"
+  #   actions   = ["quicksight:DescribeDataSource", "quicksight:DescribeDataSourcePermissions", "quicksight:PassDataSource"]
+  # }
 
-#   parameters {
-#     athena {
-#       work_group = "primary"
-#     }
-#   }
-# }
+  aws_account_id = var.account_id
+}
 
-# resource "aws_quicksight_data_set" "example" {
-#   data_set_id   = "example-data-set"
-#   name          = "example"
-#   import_mode   = "SPICE"
+# Define the QuickSight Dataset
+resource "aws_quicksight_data_set" "table-data" {
+  data_set_id = "table-data-athena-dataset"
+  name        = "table-data-athena-dataset"
+  import_mode = "SPICE"
 
-#   column {
-#     name = "example-column"
-#     type = "STRING"
-#   }
+  physical_table_map {
+    physical_table_map_id = var.athena_table_name
+    relational_table {
+      data_source_arn = aws_quicksight_data_source.quicksight-data-source.arn
+      name          = var.athena_table_name
+      input_columns {
+      name = "age"
+      type = "bigint"
+      }
+      input_columns {
+        name = "country"
+        type = "string"
+      }
+      input_columns {
+        name = "date"
+        type = "string"
+      }
+      input_columns {
+        name = "flag"
+        type = "string"
+      }
+      input_columns {
+        name = "gender"
+        type = "string"
+      }
+      input_columns {
+        name = "ids"
+        type = "bigint"
+      }
+      input_columns {
+        name = "target"
+        type = "bigint"
+      }
+      input_columns {
+        name = "text"
+        type = "string"
+      }
+      input_columns {
+        name = "user"
+        type = "string"
+      }
+      input_columns {
+        name = "sadness"
+        type = "double"
+      }
+      input_columns {
+        name = "joy"
+        type = "double"
+      }
+      input_columns {
+        name = "love"
+        type = "double"
+      }
+      input_columns {
+        name = "anger"
+        type = "double"
+      }
+      input_columns {
+        name = "fear"
+        type = "double"
+      }
+      input_columns {
+        name = "surprise"
+        type = "double"
+      }
+    }
+  }
+}
 
-#   permissions {
-#     principal = aws_iam_role.quicksight_role.arn
-#     actions   = ["quicksight:DescribeDataSet", "quicksight:DescribeDataSetPermissions", "quicksight:PassDataSet"]
-#   }
-# }
+# Define the QuickSight dataset
+resource "aws_quicksight_data_set" "emotions-view" {
+  data_set_id = "emotions-view-athena-dataset"
+  name        = "emotions-view-athena-dataset"
+  import_mode = "SPICE"
 
-# resource "aws_quicksight_template" "example" {
-#   template_id = "example-template"
-#   name        = "example"
-  
-#   source_entity {
-#     source_analysis {
-#       arn = "arn:aws:quicksight:us-east-1:123456789012:analysis/example-analysis"
-#     }
-#   }
-
-#   permissions {
-#     principal = aws_iam_role.quicksight_role.arn
-#     actions   = ["quicksight:DescribeTemplate", "quicksight:DescribeTemplatePermissions", "quicksight:PassTemplate"]
-#   }
-# }
-
-# resource "aws_quicksight_dashboard" "example" {
-#   dashboard_id        = "example-dashboard"
-#   name                = "Example Dashboard"
-#   version_description = "Initial version"
-
-#   source_entity {
-#     source_template {
-#       arn = aws_quicksight_template.example.arn
-#       data_set_references {
-#         data_set_arn         = aws_quicksight_data_set.example.arn
-#         data_set_placeholder = "1"
-#       }
-#     }
-#   }
-
-#   permissions {
-#     principal = aws_iam_role.quicksight_role.arn
-#     actions   = ["quicksight:DescribeDashboard", "quicksight:ListDashboardVersions", "quicksight:UpdateDashboardPermissions", "quicksight:QueryDashboard", "quicksight:DeleteDashboard", "quicksight:UpdateDashboard", "quicksight:ShareDashboard", "quicksight:RestoreDashboard", "quicksight:CreateDashboard"]
-#   }
-# }
-
-# Code to run queries on the Athena table
-# resource "null_resource" "run_custom_query" {
-#   provisioner "local-exec" {
-#     command = <<EOT
-#       aws athena start-query-execution \
-#         --query-string "SELECT * FROM ${aws_glue_catalog_table.cust_test_table.database_name}.${aws_glue_catalog_table.cust_test_table.name} LIMIT 10;" \
-#         --query-execution-context Database=${aws_glue_catalog_table.cust_test_table.database_name} \
-#         --result-configuration "OutputLocation=s3://${aws_s3_bucket.query_results.bucket}/query-results/"
-#     EOT
-#   }
-
-#   depends_on = [aws_glue_catalog_table.cust_test_table]
-# }
+  physical_table_map {
+    physical_table_map_id = "emotions_view"
+    relational_table {
+      data_source_arn = aws_quicksight_data_source.quicksight-data-source.arn
+      name          = "emotions_data"
+      input_columns {
+        name = "sadness"
+        type = "double"
+      }
+      input_columns {
+        name = "joy"
+        type = "double"
+      }
+      input_columns {
+        name = "love"
+        type = "double"
+      }
+      input_columns {
+        name = "anger"
+        type = "double"
+      }
+      input_columns {
+        name = "fear"
+        type = "double"
+      }
+      input_columns {
+        name = "surprise"
+        type = "double"
+      }
+    }
+  }
+}
