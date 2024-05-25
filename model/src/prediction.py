@@ -12,7 +12,6 @@ clf = pipeline("text-classification",model='bhadresh-savani/distilbert-base-unca
 
 ## Output bucket in S3
 s3_bucket_read = "ccbda-customer-1-bucket-121"
-s3_bucket_write = "ccbda-customer-1-bucket-121"
 s3 = boto3.client('s3')
 while True:
     date_now = datetime.datetime.now()
@@ -52,7 +51,7 @@ while True:
                 df_parquet = df_output.to_parquet()
                 print("TO parquet")
                 # write to s3
-                s3.put_object(Bucket=s3_bucket_write, Key=predict_key, Body=df_parquet)
+                s3.put_object(Bucket=s3_bucket_read, Key=predict_key, Body=df_parquet)
                 print("TO s3")
 
                 # Delete the raw file from the input bucket
