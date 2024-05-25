@@ -20,4 +20,5 @@ module "data_analytics" {
     script_location = "s3://ccbda-glue-assets-bucket/scripts/ParseDateJob.py"
     temporary_directory = "s3://ccbda-glue-assets-bucket/temporary/"
     spark_path = "s3://ccbda-glue-assets-bucket/sparkHistoryLogs/"
+    account_id = "975050200630"
 }
