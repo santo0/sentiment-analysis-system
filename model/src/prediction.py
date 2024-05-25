@@ -4,6 +4,7 @@ import json
 import boto3
 
 from time import sleep
+import datetime
 
 
 ## declare model from transformers
