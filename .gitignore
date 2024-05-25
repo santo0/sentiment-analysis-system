@@ -210,3 +210,7 @@ producer.zip
 # Pycharm
 .DS_Store
 **/.DS_Store
+awscliv2.zip
+aws/install
+aws/README.md
+aws/THIRD_PARTY_LICENSES

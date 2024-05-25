@@ -2,9 +2,14 @@ provider "aws" {
   region = "us-east-1"
 }
 
+data "aws_iam_role" "iam_role" {
+  name = "LabInstanceProfile"
+}
+
 resource "aws_instance" "prediction" {
   ami           = "ami-04b70fa74e45c3917"  # Update this to an Ubuntu AMI ID for your region
   instance_type = "m5.large"
+  arn = data.iam_role.arn
 
   user_data = <<-EOF
               #!/bin/bash
