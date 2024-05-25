@@ -10,8 +10,8 @@ from time import sleep
 clf = pipeline("text-classification",model='bhadresh-savani/distilbert-base-uncased-emotion', top_k=None)
 
 ## Output bucket in S3
-s3_bucket_read = "ccbda-customer-1-nacho"
-s3_bucket_write = "ccbda-customer-1-nacho"
+s3_bucket_read = "ccbda-customer-1-final"
+s3_bucket_write = "ccbda-customer-1-final"
 s3 = boto3.client('s3')
 while True:
     response = s3.list_objects_v2(Bucket=s3_bucket_read)
