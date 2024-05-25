@@ -1,11 +1,11 @@
-module "storage" {
-    source = "./modules/common"
-}
+# module "storage" {
+#     source = "./modules/common"
+# }
 
 
-module "data_ingestion" {
-    source = "./modules/data_ingestion"
-}
+# module "data_ingestion" {
+#     source = "./modules/data_ingestion"
+# }
 
 # module "data_prediction" {
 #     source = "./modules/data_prediction"
