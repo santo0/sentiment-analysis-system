@@ -228,63 +228,63 @@ resource "aws_quicksight_data_set" "table-data" {
       name          = var.athena_table_name
       input_columns {
       name = "age"
-      type = "integer"
+      type = "INTEGER"
       }
       input_columns {
         name = "country"
-        type = "string"
+        type = "STRING"
       }
       input_columns {
         name = "date"
-        type = "string"
+        type = "STRING"
       }
       input_columns {
         name = "flag"
-        type = "string"
+        type = "STRING"
       }
       input_columns {
         name = "gender"
-        type = "string"
+        type = "STRING"
       }
       input_columns {
         name = "ids"
-        type = "integer"
+        type = "INTEGER"
       }
       input_columns {
         name = "target"
-        type = "integer"
+        type = "INTEGER"
       }
       input_columns {
         name = "text"
-        type = "string"
+        type = "STRING"
       }
       input_columns {
         name = "user"
-        type = "string"
+        type = "STRING"
       }
       input_columns {
         name = "sadness"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "joy"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "love"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "anger"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "fear"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "surprise"
-        type = "decimal"
+        type = "DECIMAL"
       }
     }
   }
@@ -303,27 +303,27 @@ resource "aws_quicksight_data_set" "emotions-view" {
       name          = "emotions_data"
       input_columns {
         name = "sadness"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "joy"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "love"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "anger"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "fear"
-        type = "decimal"
+        type = "DECIMAL"
       }
       input_columns {
         name = "surprise"
-        type = "decimal"
+        type = "DECIMAL"
       }
     }
   }
