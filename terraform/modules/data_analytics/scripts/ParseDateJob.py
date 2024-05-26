@@ -56,7 +56,7 @@ job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
 
-filter_date = datetime.datetime.now() - datetime.timedelta(minutes=10)
+filter_date = datetime.datetime.now() - datetime.timedelta(minutes=3)
 
 # Script generated for node Amazon S3
 AmazonS3_node = glueContext.create_dynamic_frame.from_options(

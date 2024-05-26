@@ -171,7 +171,7 @@ resource "aws_glue_job" "parse_date_job" {
 resource "aws_glue_trigger" "parse_job_trigger" {
   name     = "parse-trigger"
   type     = "SCHEDULED"
-  schedule = "rate(10 minutes)"  # This expression schedules the job to run every 10 minutes
+  schedule = "rate(3 minutes)"  # This expression schedules the job to run every 10 minutes
 
   actions {
     job_name = aws_glue_job.parse_date_job.name
@@ -196,135 +196,135 @@ resource "aws_s3_object" "glue_script" {
 }
 
 
-# Define the QuickSight Data Source for Athena
-resource "aws_quicksight_data_source" "quicksight-data-source" {
-  data_source_id = "quicksight-athena-source"
-  name           = "ccbda-project"
-  type           = "ATHENA"
-  parameters {
-    athena {
-      work_group = "athena-workgroup"
-    }
-  }
+# # Define the QuickSight Data Source for Athena
+# resource "aws_quicksight_data_source" "quicksight-data-source" {
+#   data_source_id = "quicksight-athena-source"
+#   name           = "ccbda-project"
+#   type           = "ATHENA"
+#   parameters {
+#     athena {
+#       work_group = "athena-workgroup"
+#     }
+#   }
 
-  # permission {
-  #   principal = "arn:aws:quicksight:us-east-1:123456789012:user/default/quicksight-user"
-  #   actions   = ["quicksight:DescribeDataSource", "quicksight:DescribeDataSourcePermissions", "quicksight:PassDataSource"]
-  # }
+#    permission {
+#       principal = "arn:aws:quicksight:us-east-1:975050200630:user/default/quicksight-user"
+#       actions   = ["quicksight:DescribeDataSource", "quicksight:DescribeDataSourcePermissions", "quicksight:PassDataSource"]
+#   }
 
-  aws_account_id = var.account_id
-}
+#   aws_account_id = var.account_id
+# }
 
-# Define the QuickSight Dataset
-resource "aws_quicksight_data_set" "table-data" {
-  data_set_id = "table-data-athena-dataset"
-  name        = "table-data-athena-dataset"
-  import_mode = "SPICE"
+# # Define the QuickSight Dataset
+# resource "aws_quicksight_data_set" "table-data" {
+#   data_set_id = "table-data-athena-dataset"
+#   name        = "table-data-athena-dataset"
+#   import_mode = "SPICE"
 
-  physical_table_map {
-    physical_table_map_id = var.athena_table_name
-    relational_table {
-      data_source_arn = aws_quicksight_data_source.quicksight-data-source.arn
-      name          = var.athena_table_name
-      input_columns {
-      name = "age"
-      type = "INTEGER"
-      }
-      input_columns {
-        name = "country"
-        type = "STRING"
-      }
-      input_columns {
-        name = "date"
-        type = "STRING"
-      }
-      input_columns {
-        name = "flag"
-        type = "STRING"
-      }
-      input_columns {
-        name = "gender"
-        type = "STRING"
-      }
-      input_columns {
-        name = "ids"
-        type = "INTEGER"
-      }
-      input_columns {
-        name = "target"
-        type = "INTEGER"
-      }
-      input_columns {
-        name = "text"
-        type = "STRING"
-      }
-      input_columns {
-        name = "user"
-        type = "STRING"
-      }
-      input_columns {
-        name = "sadness"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "joy"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "love"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "anger"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "fear"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "surprise"
-        type = "DECIMAL"
-      }
-    }
-  }
-}
+#   physical_table_map {
+#     physical_table_map_id = var.athena_table_name
+#     relational_table {
+#       data_source_arn = aws_quicksight_data_source.quicksight-data-source.arn
+#       name          = var.athena_table_name
+#       input_columns {
+#       name = "age"
+#       type = "INTEGER"
+#       }
+#       input_columns {
+#         name = "country"
+#         type = "STRING"
+#       }
+#       input_columns {
+#         name = "date"
+#         type = "STRING"
+#       }
+#       input_columns {
+#         name = "flag"
+#         type = "STRING"
+#       }
+#       input_columns {
+#         name = "gender"
+#         type = "STRING"
+#       }
+#       input_columns {
+#         name = "ids"
+#         type = "INTEGER"
+#       }
+#       input_columns {
+#         name = "target"
+#         type = "INTEGER"
+#       }
+#       input_columns {
+#         name = "text"
+#         type = "STRING"
+#       }
+#       input_columns {
+#         name = "user"
+#         type = "STRING"
+#       }
+#       input_columns {
+#         name = "sadness"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "joy"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "love"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "anger"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "fear"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "surprise"
+#         type = "DECIMAL"
+#       }
+#     }
+#   }
+# }
 
-# Define the QuickSight dataset
-resource "aws_quicksight_data_set" "emotions-view" {
-  data_set_id = "emotions-view-athena-dataset"
-  name        = "emotions-view-athena-dataset"
-  import_mode = "SPICE"
+# # Define the QuickSight dataset
+# resource "aws_quicksight_data_set" "emotions-view" {
+#   data_set_id = "emotions-view-athena-dataset"
+#   name        = "emotions-view-athena-dataset"
+#   import_mode = "SPICE"
 
-  physical_table_map {
-    physical_table_map_id = "emotions_view"
-    relational_table {
-      data_source_arn = aws_quicksight_data_source.quicksight-data-source.arn
-      name          = "emotions_data"
-      input_columns {
-        name = "sadness"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "joy"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "love"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "anger"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "fear"
-        type = "DECIMAL"
-      }
-      input_columns {
-        name = "surprise"
-        type = "DECIMAL"
-      }
-    }
-  }
-}
+#   physical_table_map {
+#     physical_table_map_id = "emotions_view"
+#     relational_table {
+#       data_source_arn = aws_quicksight_data_source.quicksight-data-source.arn
+#       name          = "emotions_data"
+#       input_columns {
+#         name = "sadness"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "joy"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "love"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "anger"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "fear"
+#         type = "DECIMAL"
+#       }
+#       input_columns {
+#         name = "surprise"
+#         type = "DECIMAL"
+#       }
+#     }
+#   }
+# }

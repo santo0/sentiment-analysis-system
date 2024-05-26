@@ -61,4 +61,4 @@ while True:
         print("Bucket is empty or does not exist.")
 
     print("Checking for content in the s3 10 minutes")
-    sleep(600) # sleep for 10 minutes
+    sleep(180) # sleep for 3 minutes
